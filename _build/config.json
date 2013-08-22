@@ -1,0 +1,28 @@
+{
+    "name": "BXR"
+    ,"lowCaseName": "bxr"
+    ,"description": "Testing ground"
+    ,"author": "Jan Peca (TheBoxer)"
+    ,"version": "0.1.0"
+    ,"package":{
+        "actions": [{
+            "id": 1
+            ,"controller": "index"
+            ,"langTopics": "bxr:default"
+        }]
+        ,"menus": [{
+            "text": "bxr"
+            ,"description": "bxr.menu_desc"
+            ,"action": 1
+        }]
+        ,"elements": {
+            "snippets": [{
+                "name": "BXRCreateDB"
+                ,"file": "createdb.snippet.php"
+            }]
+        }
+    }
+    ,"database": {
+        "tables": ["BXRItem"]
+    }
+}
