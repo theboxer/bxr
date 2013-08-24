@@ -5,9 +5,6 @@ BXR.extra.Tags = function(config) {
         ,valueField: 'tag'
         ,displayField: 'tag'
         ,minChars: 3
-//        ,listeners: {
-//            change: this.autoComplete
-//        }
     });
     BXR.extra.Tags.superclass.constructor.call(this,config);
 };
@@ -99,6 +96,8 @@ Ext.extend(BXR.extra.Tags,Ext.form.ComboBox,{
         }
 
     ,doQuery : function(q, forceAll){
+        this.value = q;
+
         q = Ext.isEmpty(q) ? '' : q;
         q = q.split(',');
         q = q[q.length - 1];
@@ -114,8 +113,7 @@ Ext.extend(BXR.extra.Tags,Ext.form.ComboBox,{
             return false;
         }
         q = qe.query;
-        console.log(q.length);
-        console.log((q.length >= this.minChars));
+
         forceAll = qe.forceAll;
         if(forceAll === true || (q.length >= this.minChars)){
             if(this.lastQuery !== q){
@@ -125,7 +123,7 @@ Ext.extend(BXR.extra.Tags,Ext.form.ComboBox,{
                     if(forceAll){
                         this.store.clearFilter();
                     }else{
-                        this.store.filter(this.displayField, q);
+                        this.store.filter(this.displayField, q, true);
                     }
                     this.onLoad();
                 }else{
@@ -144,15 +142,12 @@ Ext.extend(BXR.extra.Tags,Ext.form.ComboBox,{
 
     ,onSelect : function(record, index){
         if(this.fireEvent('beforeselect', this, record, index) !== false){
-            var values;
-            if(this.getValue() == ''){
-                values = [];
-            }else{
-                values = this.getValue().split(',');
-            }
 
+            var values = this.getValue().split(/\s*[,]\s*/);
+            values.pop();
             values.push(record.data[this.valueField || this.displayField]);
-            this.setValue(values.join(',') + ',');
+            values.push('');
+            this.setValue(values.join(', '));
             this.collapse();
             this.fireEvent('select', this, record, index);
         }
