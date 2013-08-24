@@ -2,100 +2,162 @@ BXR.extra.Tags = function(config) {
     config = config || {};
     Ext.apply(config,{
         ignoreCase: true
-        ,listeners: {
-            change: this.autoComplete
-        }
+        ,valueField: 'tag'
+        ,displayField: 'tag'
+        ,minChars: 3
+//        ,listeners: {
+//            change: this.autoComplete
+//        }
     });
     BXR.extra.Tags.superclass.constructor.call(this,config);
 };
-Ext.extend(BXR.extra.Tags,Ext.form.TextField,{
-    store: new Ext.data.ArrayStore({
+Ext.extend(BXR.extra.Tags,Ext.form.ComboBox,{
+    mode: 'local'
+    ,hideTrigger: true
+
+    ,defaultAutoCreate : {tag: "input", type: "text", size: "24", autocomplete: "on"}
+
+    ,myStore: new Ext.data.ArrayStore({
         autoDestroy: true,
         storeId: 'tagsStore',
         idIndex: 0,
         fields: ['tag']
     })
 
-    ,autoCompleteStore: new Ext.data.ArrayStore({
+    ,store: new Ext.data.ArrayStore({
         autoDestroy: true,
         storeId: 'autoCompleteStore',
         idIndex: 0,
-        fields: ['tag']
+        fields: ['tag'],
+        data: [
+            ['cool tag 1'],
+            ['second tag 2'],
+            ['third tag 3'],
+            ['cool tag 4'],
+            ['cool tag 5']
+        ]
     })
 
-    ,autoComplete: function(){
-        console.log(this);
-    }
-
     ,onRender : function(ct, position){
-        if(!this.el){
-            var cfg = this.getAutoCreate();
-
-            if(!cfg.name){
-                cfg.name = this.name || this.id;
+            if(this.hiddenName && !Ext.isDefined(this.submitValue)){
+                this.submitValue = false;
             }
-            if(this.inputType){
-                cfg.type = this.inputType;
-            }
-            this.autoEl = cfg;
-        }
+            Ext.form.ComboBox.superclass.onRender.call(this, ct, position);
 
-        Ext.form.Field.superclass.onRender.call(this, ct, position);
+            this.el.parent().wrap({
+                tag: 'div'
+                ,id: 'bxr-field-tags'
+            });
 
-        this.el.wrap({
-            tag: 'div'
-            ,id: 'bxr-field-tags'
-        });
+            this.el.parentNode = this.el.parent().parent();
 
-        this.el.parentNode = this.el.parent();
+            Ext.DomHelper.insertAfter(this.el.parent(), {tag: 'ul'});
+            Ext.DomHelper.insertAfter(this.el.parent(), {tag: 'button', html: 'Add'});
 
-        if(this.submitValue === false){
-            this.el.dom.removeAttribute('name');
-        }
-        var type = this.el.dom.type;
-        if(type){
-            this.el.addClass('x-form-'+type);
-        }
-        if(this.readOnly){
-            this.setReadOnly(true);
-        }
-        if(this.tabIndex !== undefined){
-            this.el.dom.setAttribute('tabIndex', this.tabIndex);
-        }
+            this.addButton = this.el.parentNode.child('button');
+            this.insertedTagsEl = this.el.parentNode.child('ul');
 
-        Ext.DomHelper.insertAfter(this.el, {tag: 'ul'});
-        Ext.DomHelper.insertAfter(this.el, {tag: 'button', html: 'Add'});
+            this.insertedTagsEl.wrap({tag: 'div', class: 'inserted-tags'});
 
-        this.addButton = this.el.parentNode.child('button');
-        this.insertedTagsEl = this.el.parentNode.child('ul');
+            this.addButton.on('click', function(){
+                var values = this.getValue().split(',');
+                Ext.each(values, function (value) {
+                    if(this.ignoreCase){
+                        value = value.toLowerCase();
+                    }
 
-        this.insertedTagsEl.wrap({tag: 'div', class: 'inserted-tags'});
+                    value = value.replace(/^\s+|\s+$/g, '');
 
-        this.addButton.on('click', function(){
-            var values = this.getValue().split(',');
-            Ext.each(values, function (value) {
-                if(this.ignoreCase){
-                    value = value.toLowerCase();
-                }
+                    if(value == ''){
+                        return;
+                    }
 
-                value = value.replace(/^\s+|\s+$/g, '');
-
-                if(value == ''){
-                    return;
-                }
-
-                var item = new BXR.extra.TagsItem({
-                    owner: this,
-                    renderTo: this.insertedTagsEl,
-                    value: value
-                });
-                item.render();
+                    var item = new BXR.extra.TagsItem({
+                        owner: this,
+                        renderTo: this.insertedTagsEl,
+                        value: value
+                    });
+                    item.render();
+                }, this);
+                this.setValue();
             }, this);
-            this.setValue();
-        }, this);
 
-        this.el.addClass([this.fieldClass, this.cls]);
+            if(this.hiddenName){
+                this.hiddenField = this.el.insertSibling({tag:'input', type:'hidden', name: this.hiddenName,
+                    id: (this.hiddenId || Ext.id())}, 'before', true);
+
+            }
+            if(Ext.isGecko){
+                this.el.dom.setAttribute('autocomplete', 'off');
+            }
+
+            if(!this.lazyInit){
+                this.initList();
+            }else{
+                this.on('focus', this.initList, this, {single: true});
+            }
+        }
+
+    ,doQuery : function(q, forceAll){
+        q = Ext.isEmpty(q) ? '' : q;
+        q = q.split(',');
+        q = q[q.length - 1];
+        q = q.replace(/^\s+|\s+$/g, '');
+
+        var qe = {
+            query: q,
+            forceAll: forceAll,
+            combo: this,
+            cancel:false
+        };
+        if(this.fireEvent('beforequery', qe)===false || qe.cancel){
+            return false;
+        }
+        q = qe.query;
+        console.log(q.length);
+        console.log((q.length >= this.minChars));
+        forceAll = qe.forceAll;
+        if(forceAll === true || (q.length >= this.minChars)){
+            if(this.lastQuery !== q){
+                this.lastQuery = q;
+                if(this.mode == 'local'){
+                    this.selectedIndex = -1;
+                    if(forceAll){
+                        this.store.clearFilter();
+                    }else{
+                        this.store.filter(this.displayField, q);
+                    }
+                    this.onLoad();
+                }else{
+                    this.store.baseParams[this.queryParam] = q;
+                    this.store.load({
+                        params: this.getParams(q)
+                    });
+                    this.expand();
+                }
+            }else{
+                this.selectedIndex = -1;
+                this.onLoad();
+            }
+        }
     }
+
+    ,onSelect : function(record, index){
+        if(this.fireEvent('beforeselect', this, record, index) !== false){
+            var values;
+            if(this.getValue() == ''){
+                values = [];
+            }else{
+                values = this.getValue().split(',');
+            }
+
+            values.push(record.data[this.valueField || this.displayField]);
+            this.setValue(values.join(','));
+            this.collapse();
+            this.fireEvent('select', this, record, index);
+        }
+    }
+
 });
 Ext.reg('bxr-field-tags',BXR.extra.Tags);
 
@@ -110,10 +172,11 @@ Ext.extend(BXR.extra.TagsItem,Ext.Component, {
         BXR.extra.TagsItem.superclass.initComponent.call(this);
         this.renderCurrentItem = true;
 
-        var itemsCount = this.owner.store.getCount();
+        var itemsCount = this.owner.myStore.getCount();
         var record = new Ext.data.Record({tag: this.value}, this.value);
-        this.owner.store.add([record]);
-        if(itemsCount == this.owner.store.getCount()) this.renderCurrentItem = false;
+        this.owner.myStore.add([record]);
+
+        if(itemsCount == this.owner.myStore.getCount()) this.renderCurrentItem = false;
     },
     onRender : function(ct, position){
         if(!this.renderCurrentItem) return true;
@@ -156,7 +219,7 @@ Ext.extend(BXR.extra.TagsItem,Ext.Component, {
         this.lnk.on('click', function(){
             var record = new Ext.data.Record({tag: this.value}, this.value);
             this.el.remove();
-            this.owner.store.remove(this.owner.store.getById(this.value));
+            this.owner.myStore.remove(this.owner.myStore.getById(this.value));
         }, this);
     },
     onDestroy : function() {
