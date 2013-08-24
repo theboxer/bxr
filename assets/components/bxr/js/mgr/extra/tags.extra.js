@@ -152,7 +152,7 @@ Ext.extend(BXR.extra.Tags,Ext.form.ComboBox,{
             }
 
             values.push(record.data[this.valueField || this.displayField]);
-            this.setValue(values.join(','));
+            this.setValue(values.join(',') + ',');
             this.collapse();
             this.fireEvent('select', this, record, index);
         }
