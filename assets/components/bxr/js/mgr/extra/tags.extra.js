@@ -35,65 +35,166 @@ Ext.extend(BXR.extra.Tags,Ext.form.ComboBox,{
         ]
     })
 
-    ,onRender : function(ct, position){
-            if(this.hiddenName && !Ext.isDefined(this.submitValue)){
-                this.submitValue = false;
-            }
-            Ext.form.ComboBox.superclass.onRender.call(this, ct, position);
+    ,initValue : function(){
+        if(this.value !== undefined){
+            this.setValue(this.value);
+        }else if(!Ext.isEmpty(this.el.dom.value) && this.el.dom.value != this.emptyText){
+            this.setValue(this.el.dom.value);
+        }
+        /**
+         * The original value of the field as configured in the {@link #value} configuration, or
+         * as loaded by the last form load operation if the form's {@link Ext.form.BasicForm#trackResetOnLoad trackResetOnLoad}
+         * setting is <code>true</code>.
+         * @type mixed
+         * @property originalValue
+         */
+        this.originalValue = this.getFieldValue();
+    }
 
-            this.el.parent().wrap({
-                tag: 'div'
-                ,id: 'bxr-field-tags'
-            });
+    ,onFocus : function(){
+        this.preFocus();
+        if(this.focusClass){
+            this.el.addClass(this.focusClass);
+        }
+        if(!this.hasFocus){
+            this.hasFocus = true;
+            /**
+             * <p>The value that the Field had at the time it was last focused. This is the value that is passed
+             * to the {@link #change} event which is fired if the value has been changed when the Field is blurred.</p>
+             * <p><b>This will be undefined until the Field has been visited.</b> Compare {@link #originalValue}.</p>
+             * @type mixed
+             * @property startValue
+             */
+            this.startValue = this.getFieldValue();
+            this.fireEvent('focus', this);
+        }
+    }
 
-            this.el.parentNode = this.el.parent().parent();
+    ,isDirty : function() {
+        if(this.disabled || !this.rendered) {
+            return false;
+        }
+        return String(this.getFieldValue()) !== String(this.originalValue);
+    }
 
-            Ext.DomHelper.insertAfter(this.el.parent(), {tag: 'ul'});
-            Ext.DomHelper.insertAfter(this.el.parent(), {tag: 'button', html: 'Add'});
+    ,append : function(v){
+        this.setValue([this.getFieldValue(), v].join(''));
+    }
 
-            this.addButton = this.el.parentNode.child('button');
-            this.insertedTagsEl = this.el.parentNode.child('ul');
+    ,getValue: function(){
+        var restValues = this.getFieldValue();
+        if(restValues == '' || restValues == undefined) restValues = '';
 
-            this.insertedTagsEl.wrap({tag: 'div', class: 'inserted-tags'});
+        restValues = restValues.split(/\s*[,]\s*/);
 
-            this.addButton.on('click', function(){
-                var values = this.getValue().split(',');
-                Ext.each(values, function (value) {
-                    if(this.ignoreCase){
-                        value = value.toLowerCase();
-                    }
+        Ext.each(restValues, function(value){
+            var record = new Ext.data.Record({tag: value}, value);
+            this.myStore.add([record]);
+        }, this);
 
-                    value = value.replace(/^\s+|\s+$/g, '');
+        return this.myStore.collect('tag').join();
+    }
 
-                    if(value == ''){
-                        return;
-                    }
+    ,setValue: function(v){
+        while(this.insertedTagsEl.dom.firstChild != null){
+            this.insertedTagsEl.dom.firstChild.remove();
+        }
 
-                    var item = new BXR.extra.TagsItem({
-                        owner: this,
-                        renderTo: this.insertedTagsEl,
-                        value: value
-                    });
-                    item.render();
-                }, this);
-                this.setValue();
-            }, this);
+        this.myStore.clearData();
 
-            if(this.hiddenName){
-                this.hiddenField = this.el.insertSibling({tag:'input', type:'hidden', name: this.hiddenName,
-                    id: (this.hiddenId || Ext.id())}, 'before', true);
+        if(v instanceof Array){
+            v = v.join();
+        }
 
-            }
-            if(Ext.isGecko){
-                this.el.dom.setAttribute('autocomplete', 'off');
-            }
+        this.addItems(v);
+    }
 
-            if(!this.lazyInit){
-                this.initList();
-            }else{
-                this.on('focus', this.initList, this, {single: true});
+    ,setFieldValue : function(v){
+        var text = v;
+        if(this.valueField){
+            var r = this.findRecord(this.valueField, v);
+            if(r){
+                text = r.data[this.displayField];
+            }else if(Ext.isDefined(this.valueNotFoundText)){
+                text = this.valueNotFoundText;
             }
         }
+        this.lastSelectionText = text;
+        if(this.hiddenField){
+            this.hiddenField.value = Ext.value(v, '');
+        }
+        Ext.form.ComboBox.superclass.setValue.call(this, text);
+        this.value = v;
+        return this;
+    }
+
+    ,getFieldValue: function(){
+        return this.value;
+    }
+
+    ,onRender : function(ct, position){
+        if(this.hiddenName && !Ext.isDefined(this.submitValue)){
+            this.submitValue = false;
+        }
+        Ext.form.ComboBox.superclass.onRender.call(this, ct, position);
+
+        this.el.parent().wrap({
+            tag: 'div'
+            ,id: 'bxr-field-tags'
+        });
+
+        this.el.parentNode = this.el.parent().parent();
+
+        Ext.DomHelper.insertAfter(this.el.parent(), {tag: 'ul'});
+        Ext.DomHelper.insertAfter(this.el.parent(), {tag: 'button', html: 'Add'});
+
+        this.addButton = this.el.parentNode.child('button');
+        this.insertedTagsEl = this.el.parentNode.child('ul');
+
+        this.insertedTagsEl.wrap({tag: 'div', class: 'inserted-tags'});
+
+        this.addButton.on('click', this.addItemsFromField, this);
+
+        if(this.hiddenName){
+            this.hiddenField = this.el.insertSibling({tag:'input', type:'hidden', name: this.hiddenName,
+                id: (this.hiddenId || Ext.id())}, 'before', true);
+
+        }
+        if(Ext.isGecko){
+            this.el.dom.setAttribute('autocomplete', 'off');
+        }
+
+        if(!this.lazyInit){
+            this.initList();
+        }else{
+            this.on('focus', this.initList, this, {single: true});
+        }
+    }
+
+    ,addItemsFromField: function(){
+        this.addItems(this.getFieldValue());
+    }
+
+    ,addItems: function(items){
+        var values = items.split(/\s*[,]\s*/);
+        Ext.each(values, function (value) {
+            if(this.ignoreCase){
+                value = value.toLowerCase();
+            }
+
+            if(value == ''){
+                return;
+            }
+
+            var item = new BXR.extra.TagsItem({
+                owner: this,
+                renderTo: this.insertedTagsEl,
+                value: value
+            });
+            item.render();
+        }, this);
+        this.setFieldValue();
+    }
 
     ,doQuery : function(q, forceAll){
         this.value = q;
@@ -143,11 +244,11 @@ Ext.extend(BXR.extra.Tags,Ext.form.ComboBox,{
     ,onSelect : function(record, index){
         if(this.fireEvent('beforeselect', this, record, index) !== false){
 
-            var values = this.getValue().split(/\s*[,]\s*/);
+            var values = this.getFieldValue().split(/\s*[,]\s*/);
             values.pop();
             values.push(record.data[this.valueField || this.displayField]);
             values.push('');
-            this.setValue(values.join(', '));
+            this.setFieldValue(values.join(', '));
             this.collapse();
             this.fireEvent('select', this, record, index);
         }
