@@ -19,3 +19,4 @@ $_lang['bxr.item_remove_confirm'] = 'Are you sure you want to remove this Item?'
 $_lang['bxr.item_update'] = 'Update Item';
 $_lang['bxr.intro_msg'] = 'Manage your items.';
 $_lang['bxr.search...'] = 'Search';
+$_lang['bxr.loading'] = 'Loading';

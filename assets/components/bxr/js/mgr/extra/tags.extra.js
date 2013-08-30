@@ -6,6 +6,7 @@ BXR.extra.Tags = function(config) {
         ,displayField: 'tag'
         ,minChars: 3
     });
+
     BXR.extra.Tags.superclass.constructor.call(this,config);
 };
 Ext.extend(BXR.extra.Tags,Ext.form.ComboBox,{
@@ -26,13 +27,7 @@ Ext.extend(BXR.extra.Tags,Ext.form.ComboBox,{
         storeId: 'autoCompleteStore',
         idIndex: 0,
         fields: ['tag'],
-        data: [
-            ['cool tag 1'],
-            ['second tag 2'],
-            ['third tag 3'],
-            ['cool tag 4'],
-            ['cool tag 5']
-        ]
+        data: []
     })
 
     ,initValue : function(){
@@ -176,6 +171,7 @@ Ext.extend(BXR.extra.Tags,Ext.form.ComboBox,{
     }
 
     ,addItems: function(items){
+        items = Ext.isEmpty(items) ? '' : items;
         var values = items.split(/\s*[,]\s*/);
         Ext.each(values, function (value) {
             if(this.ignoreCase){
