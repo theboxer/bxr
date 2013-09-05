@@ -138,9 +138,14 @@ Ext.extend(BXR.extra.Tags,Ext.form.ComboBox,{
             ,id: 'bxr-field-tags'
         });
 
-        this.el.parentNode = this.el.parent().parent();
+        this.el.parent().wrap({
+            tag: 'div'
+            ,class: 'bxr-field-wrapper'
+        });
 
-        Ext.DomHelper.insertAfter(this.el.parent(), {tag: 'ul'});
+        this.el.parentNode = this.el.parent().parent().parent();
+
+        Ext.DomHelper.insertAfter(this.el.parent().parent(), {tag: 'ul'});
         Ext.DomHelper.insertAfter(this.el.parent(), {tag: 'button', html: 'Add'});
 
         this.addButton = this.el.parentNode.child('button');
