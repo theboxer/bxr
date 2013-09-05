@@ -21,6 +21,10 @@
 	max-width:420px;
 }
 
+#bxr-field-tags .x-form-field-wrap {
+	background:none;
+}
+
 #bxr-field-tags button {
 	margin:0 0 0 4px;
 	padding:0 8px;
