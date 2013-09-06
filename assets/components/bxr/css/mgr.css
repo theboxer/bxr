@@ -5,6 +5,8 @@
 
 .bxr-field-tags .bxr-field-wrapper {
 	margin-bottom:8px;
+	padding-right:45px;
+	position:relative;
 }
 
 .bxr-field-tags .bxr-field-wrapper:before, .bxr-field-tags .bxr-field-wrapper:after {
@@ -42,6 +44,9 @@
 	color:#53595f;
 	font:bold 11px tahoma, verdana, helvetica, sans-serif;
 	border-color:#D5D5D5;
+	position:absolute;
+	top:0;
+	right:0;
 }
 
 .bxr-field-tags .x-btn:focus {
@@ -49,7 +54,7 @@
 }
 
 .bxr-field-tags .x-form-field-wrap {
-	width: 80% !important;
+	width: 100% !important;
 	min-width:120px;
 	float:left;
 }
