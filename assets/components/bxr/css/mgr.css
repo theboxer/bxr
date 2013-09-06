@@ -3,29 +3,29 @@
     color: red;
 }
 
-#bxr-field-tags .bxr-field-wrapper {
+.bxr-field-tags .bxr-field-wrapper {
 	margin-bottom:8px;
 }
 
-#bxr-field-tags .bxr-field-wrapper:before, #bxr-field-tags .bxr-field-wrapper:after {
+.bxr-field-tags .bxr-field-wrapper:before, .bxr-field-tags .bxr-field-wrapper:after {
     content: "\0020"; 
     display: block; 
     height: 0; 
     overflow: hidden;
 }
 
-#bxr-field-tags .bxr-field-wrapper:after { clear: both; }
+.bxr-field-tags .bxr-field-wrapper:after { clear: both; }
 
-#bxr-field-tags {
+.bxr-field-tags {
 	width:auto !important;
 	max-width:420px;
 }
 
-#bxr-field-tags .x-form-field-wrap {
+.bxr-field-tags .x-form-field-wrap {
 	background:none;
 }
 
-#bxr-field-tags button {
+.bxr-field-tags button {
 	margin:0 0 0 4px;
 	padding:0 8px;
 	height:32px;
@@ -35,22 +35,22 @@
 	border-color:#D5D5D5;
 }
 
-#bxr-field-tags .x-form-field-wrap {
+.bxr-field-tags .x-form-field-wrap {
 	width: 80% !important;
 	min-width:120px;
 	float:left;
 }
 
-#bxr-field-tags .inserted-tags {
+.bxr-field-tags .inserted-tags {
 	margin-top:3px;
 }
 
-#bxr-field-tags .inserted-tags li {
+.bxr-field-tags .inserted-tags li {
 	float:left;
 	margin:0 4px 4px 0;
 }
 
-#bxr-field-tags .inserted-tags li:last-of-type {
+.bxr-field-tags .inserted-tags li:last-of-type {
 	margin-right:0;
 }
 
