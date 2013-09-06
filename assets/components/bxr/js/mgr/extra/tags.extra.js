@@ -8,6 +8,8 @@ BXR.extra.Tags = function(config) {
     });
 
     BXR.extra.Tags.superclass.constructor.call(this,config);
+
+    this.addEvents('additem', 'removeitem');
 };
 Ext.extend(BXR.extra.Tags,Ext.form.ComboBox,{
     mode: 'local'
@@ -190,9 +192,15 @@ Ext.extend(BXR.extra.Tags,Ext.form.ComboBox,{
             var item = new BXR.extra.TagsItem({
                 owner: this,
                 renderTo: this.insertedTagsEl,
-                value: value
+                value: value,
+                listeners: {
+                    remove: function(item){
+                        this.fireEvent('removeitem',this,item);
+                    },scope: this
+                }
             });
             item.render();
+            this.fireEvent('additem',this,value);
         }, this);
         this.setFieldValue();
     }
@@ -262,6 +270,7 @@ Ext.reg('bxr-field-tags',BXR.extra.Tags);
 BXR.extra.TagsItem = function(config){
     Ext.apply(this,config);
     Ext.ux.form.SuperBoxSelectItem.superclass.constructor.call(this);
+    this.addEvents('remove');
 };
 Ext.extend(BXR.extra.TagsItem,Ext.Component, {
     renderCurrentItem: true
@@ -317,6 +326,8 @@ Ext.extend(BXR.extra.TagsItem,Ext.Component, {
             var record = new Ext.data.Record({tag: this.value}, this.value);
             this.el.remove();
             this.owner.myStore.remove(this.owner.myStore.getById(this.value));
+
+            this.fireEvent('remove',this,this.value);
         }, this);
     },
     onDestroy : function() {
