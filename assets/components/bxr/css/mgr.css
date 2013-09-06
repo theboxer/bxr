@@ -25,10 +25,9 @@
 	background:none;
 }
 
-.bxr-field-tags input {
+.bxr-field-tags input.x-form-text.x-form-field {
 	width: 100% !important;
 	height:100% !important;
-	padding-top:5px !important;
 	-webkit-box-sizing:border-box;
 	-moz-box-sizing:border-box;
 	box-sizing:border-box;
