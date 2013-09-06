@@ -25,6 +25,14 @@
 	background:none;
 }
 
+.bxr-field-tags input {
+	width: 100% !important;
+	height:100% !important;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	box-sizing:border-box;
+}
+
 .bxr-field-tags button {
 	margin:0 0 0 4px;
 	padding:0 8px;
