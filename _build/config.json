@@ -5,20 +5,15 @@
     ,"author": "Jan Peca (TheBoxer)"
     ,"version": "0.1.0"
     ,"package":{
-        "actions": [{
-            "id": 1
-            ,"controller": "index"
-            ,"langTopics": "bxr:default"
-        }]
-        ,"menus": [{
+        "menus": [{
             "text": "bxr"
             ,"description": "bxr.menu_desc"
-            ,"action": 1
+            ,"action": "home"
         }]
         ,"elements": {
-            "snippets": [{
-                "name": "BXRCreateDB"
-                ,"file": "createdb.snippet.php"
+            "plugins": [{
+                "name": "BXR"
+                ,"events": ["OnDocFormPrerender"]
             }]
         }
     }
