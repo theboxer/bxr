@@ -72,38 +72,32 @@ Ext.extend(BXR.grid.Items,MODx.grid.Grid,{
     }
     
     ,createItem: function(btn,e) {
-        this.createUpdateItem(btn, e, false);
-    }
-
-    ,updateItem: function(btn,e) {
-        this.createUpdateItem(btn, e, true);
-    }
-
-    ,createUpdateItem: function(btn,e,isUpdate) {
-        var r;
-
-        if(isUpdate){
-            if (!this.menu.record || !this.menu.record.id) return false;
-            r = this.menu.record;
-        }else{
-            r = {};
-        }
-
-        this.windows.createUpdateItem = MODx.load({
-            xtype: 'bxr-window-item-create-update'
-            ,isUpdate: isUpdate
-            ,title: (isUpdate) ?  _('bxr.item_update') : _('bxr.item_create')
-            ,record: r
+        var createItem = MODx.load({
+            xtype: 'bxr-window-item'
+            ,title: _('bxr.item_create')
             ,listeners: {
                 'success': {fn:function() { this.refresh(); },scope:this}
             }
         });
 
-        this.windows.createUpdateItem.fp.getForm().reset();
-        this.windows.createUpdateItem.fp.getForm().setValues(r);
-        this.windows.createUpdateItem.show(e.target);
+        createItem.show(e.target);
     }
-    
+
+    ,updateItem: function(btn,e) {
+        var updateItem = MODx.load({
+            xtype: 'bxr-window-item'
+            ,title: _('bxr.item_update')
+            ,record: this.menu.record
+            ,listeners: {
+                'success': {fn:function() { this.refresh(); },scope:this}
+            }
+        });
+
+        updateItem.fp.getForm().reset();
+        updateItem.fp.getForm().setValues(this.menu.record);
+        updateItem.show(e.target);
+    }
+
     ,removeItem: function(btn,e) {
         if (!this.menu.record) return false;
         
@@ -130,36 +124,3 @@ Ext.extend(BXR.grid.Items,MODx.grid.Grid,{
 
 });
 Ext.reg('bxr-grid-items',BXR.grid.Items);
-
-BXR.window.CreateUpdateItem = function(config) {
-    config = config || {};
-    Ext.applyIf(config,{
-        closeAction: 'close'
-        ,url: BXR.config.connectorUrl
-        ,action: (config.isUpdate)? 'mgr/item/update' : 'mgr/item/create'
-        ,fields: [{
-            xtype: 'textfield'
-            ,name: 'id'
-            ,id: this.ident+'-id'
-            ,hidden: true
-        },{
-            xtype: 'textfield'
-            ,fieldLabel: _('name')
-            ,name: 'name'
-            ,anchor: '100%'
-        },{
-            xtype: 'textarea'
-            ,fieldLabel: _('description')
-            ,name: 'description'
-            ,anchor: '100%'
-        },{
-            xtype: 'textfield'
-            ,name: 'position'
-            ,hidden: true
-        }]
-    });
-    BXR.window.CreateUpdateItem.superclass.constructor.call(this,config);
-};
-Ext.extend(BXR.window.CreateUpdateItem,MODx.Window);
-Ext.reg('bxr-window-item-create-update',BXR.window.CreateUpdateItem);
-

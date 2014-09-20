@@ -17,6 +17,7 @@ class BXRHomeManagerController extends BXRBaseManagerController {
     public function loadCustomCssJs() {
         $jsUrl = $this->bxr->getOption('jsUrl');
 
+        $this->addJavascript($jsUrl .'mgr/widgets/items.window.js');
         $this->addJavascript($jsUrl .'mgr/widgets/items.grid.js');
         $this->addJavascript($jsUrl . 'mgr/widgets/home.panel.js');
         $this->addLastJavascript($jsUrl . 'mgr/sections/home.js');
