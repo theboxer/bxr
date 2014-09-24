@@ -20,6 +20,7 @@ script:
  - php TheBoxer/bxr/_build/build.transport.php
 
 after_success:
+ - cd TheBoxer/bxr
  - cat $DEPLOY_KEY > .travis/deploy_key.pem
  - chmod 600 .travis/deploy_key.pem
  - ssh-add .travis/deploy_key.pem
