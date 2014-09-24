@@ -5,7 +5,6 @@ php:
 
 before_script:
  - mysql -e 'create database modx;'
- - rm -rf _packages/*
  - cd ..
  - cd ..
  - curl -Lo modx.zip http://modx.com/download/latest/ -#
