@@ -9,7 +9,6 @@ cache:
   - /home/travis/build/modx/
 
 before_script:
- - echo $HOME
  - mysql -e 'create database modx;'
  - cd ..
  - cd ..
