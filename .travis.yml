@@ -9,3 +9,6 @@ before_script:
  - touch modx/config.xml
  - echo "<modx><database_type>mysql</database_type><database_server>localhost</database_server><database>modx</database><database_user>root</database_user><database_password></database_password><database_connection_charset>utf8</database_connection_charset><database_charset>utf8</database_charset><database_collation>utf8_general_ci</database_collation><table_prefix>modx_</table_prefix><https_port>443</https_port><http_host>http://127.0.0.1</http_host><cache_disabled>0</cache_disabled><inplace>1</inplace><unpacked>0</unpacked><language>en</language><cmsadmin>modx</cmsadmin><cmspassword>modxmodx</cmspassword><cmsadminemail>modx@example.com</cmsadminemail><core_path>modx/core/</core_path><context_mgr_path>modx/manager/</context_mgr_path><context_mgr_url>modx/manager/</context_mgr_url><context_connectors_path>modx/connectors/</context_connectors_path><context_connectors_url>modx/connectors/</context_connectors_url><context_web_path>modx/</context_web_path><context_web_url>modx/</context_web_url><remove_setup_directory>1</remove_setup_directory></modx>" > modx/config.xml
  - php -d date.timezone=Europe/Prague modx/setup/index.php --installmode=new --config=modx/config.xml
+
+script:
+ - php _build/build.transport.php
