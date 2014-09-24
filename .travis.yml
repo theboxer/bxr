@@ -14,13 +14,14 @@ before_script:
  - echo "<modx><database_type>mysql</database_type><database_server>localhost</database_server><database>modx</database><database_user>root</database_user><database_password></database_password><database_connection_charset>utf8</database_connection_charset><database_charset>utf8</database_charset><database_collation>utf8_general_ci</database_collation><table_prefix>modx_</table_prefix><https_port>443</https_port><http_host>http://127.0.0.1</http_host><cache_disabled>0</cache_disabled><inplace>1</inplace><unpacked>0</unpacked><language>en</language><cmsadmin>modx</cmsadmin><cmspassword>modxmodx</cmspassword><cmsadminemail>modx@example.com</cmsadminemail><core_path>modx/core/</core_path><context_mgr_path>modx/manager/</context_mgr_path><context_mgr_url>modx/manager/</context_mgr_url><context_connectors_path>modx/connectors/</context_connectors_path><context_connectors_url>modx/connectors/</context_connectors_url><context_web_path>modx/</context_web_path><context_web_url>modx/</context_web_url><remove_setup_directory>1</remove_setup_directory></modx>" > modx/config.xml
  - php -d date.timezone=Europe/Prague modx/setup/index.php --installmode=new --config=modx/config.xml > /dev/null
  - echo "<?php define('MODX_BASE_PATH', '/home/travis/build/modx/');define('MODX_CORE_PATH', MODX_BASE_PATH . 'core/');define('MODX_MANAGER_PATH', MODX_BASE_PATH . 'manager/');define('MODX_CONNECTORS_PATH', MODX_BASE_PATH . 'connectors/');define('MODX_ASSETS_PATH', MODX_BASE_PATH . 'assets/');define('MODX_BASE_URL','/');define('MODX_CORE_URL', MODX_BASE_URL . 'core/');define('MODX_MANAGER_URL', MODX_BASE_URL . 'manager/');define('MODX_CONNECTORS_URL', MODX_BASE_URL . 'connectors/');define('MODX_ASSETS_URL', MODX_BASE_URL . 'assets/');" > TheBoxer/bxr/_build/build.config.php
- - sed "s/'PKG_RELEASE','.*/'PKG_RELEASE','dev-`date +"%y%m%d%H%M%S"`');/g" TheBoxer/bxr/_build/build.transport.php > build.transport.php
+ - sed "s/'PKG_RELEASE','.*/'PKG_RELEASE','dev-`date +"%y%m%d%H%M%S"`');/g" TheBoxer/bxr/_build/build.transport.php > TheBoxer/bxr/_build/build.transport.php
 
 script:
  - php TheBoxer/bxr/_build/build.transport.php
 
 after_success:
  - openssl aes-256-cbc -K $encrypted_2a2dda41bf3a_key -iv $encrypted_2a2dda41bf3a_iv -in travis.enc -out travis -d
+ - ssh-agent
  - ssh-add travis
  - cd TheBoxer/bxr
  - git config --global user.email "pecajan+travis@gmail.com"
