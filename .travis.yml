@@ -4,6 +4,7 @@ php:
 
 before_script:
  - mysql -e 'create database modx;'
+ - cd ..
  - curl -Lo modx.zip http://modx.com/download/latest/ -#
  - unzip modx.zip
  - mv `ls -F | grep "modx-" | head -1` modx
@@ -12,4 +13,4 @@ before_script:
  - php -d date.timezone=Europe/Prague modx/setup/index.php --installmode=new --config=modx/config.xml > /dev/null
 
 script:
- - php TheBoxer/bxr/_build/build.transport.php
+ - php bxr/_build/build.transport.php
