@@ -15,7 +15,7 @@ set_time_limit(0);
 define('PKG_NAME','BXR');
 define('PKG_NAME_LOWER',strtolower(PKG_NAME));
 define('PKG_VERSION','1.0.0');
-define('PKG_RELEASE','dev-140925194753');
+define('PKG_RELEASE','dev-140925195050');
 
 /* define sources */
 $root = dirname(dirname(__FILE__)).'/';
